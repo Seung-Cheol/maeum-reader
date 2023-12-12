@@ -24,9 +24,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Check Npm -v
-        run: npm -v
-
       - name: create env file 
         working-directory: ./
         run: |
