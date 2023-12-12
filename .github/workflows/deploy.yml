@@ -19,10 +19,10 @@ jobs:
       - name: Checkout source code.
         uses: actions/checkout@v2
 
-      - name: Use Node.js 21.2.0
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: 21.2.0
+          node-version: ${{ matrix.node-version }}
 
       - name: Check Npm -v
         run: npm -v
