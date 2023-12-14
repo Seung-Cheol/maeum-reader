@@ -71,6 +71,13 @@ jobs:
           tags: ${{ env.DOCKER_IMAGE }}:latest
   
   deploy:
+    - name: Login to ghcr
+    uses: docker/login-action@v3
+    with:
+    registry: ghcr.io
+    username: ${{ github.actor }}
+    password: ${{ secrets.GHCR_TOKEN }}
+
     needs: build
     name: Deploy
     runs-on: [ self-hosted, label-maeum ]
