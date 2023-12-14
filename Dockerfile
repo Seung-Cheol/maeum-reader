@@ -14,6 +14,7 @@ WORKDIR /usr/src/app
 ARG NODE_ENV=production
 # 환경변수 설정
 ENV NODE_ENV=${NODE_ENV}
+ENV DB_HOST=${DB_HOST}
 # COPY --from=build /usr/src/app/.env ./.env
 COPY --from=build /usr/src/app/dist ./dist
 COPY package*.json ./
