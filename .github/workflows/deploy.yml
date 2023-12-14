@@ -12,13 +12,6 @@ env:
   DOCKER_IMAGE: ghcr.io/seung-cheol/maeum-reader
   VERSION: ${{ github.sha }}
   NAME: superman
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USERNAME: ${{ secrets.DB_USERNAME }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_DATABASE: ${{ secrets.DB_DATABASE }}
-  KAKAO_ID: ${{ secrets.KAKAO_ID }}
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  AUTHORIZATION_TIME: ${{ secrets.AUTHORIZATION_TIME }}
   # Docker image 를 ghcr.io 에 올릴 때 우리의github이름/이미지이름 으로 저장한다. 이미지이름을 정해주면 된다.
   # Docker image 의 이름을 superman 이라고 해놓은 것. 이름 뭐할지 정하면 된다.
 
