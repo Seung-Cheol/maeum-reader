@@ -70,7 +70,7 @@ jobs:
           docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.DOCKER_IMAGE }}:latest
           docker run -d -p 80:3000 -p 3000:3000 --name superman --restart always ${{ env.DOCKER_IMAGE }}:latest
           -e DB_HOST= ${{ secrets.DB_HOST }}
-          -e DB_USERNAME=${{ secrets.USERNAME }}
+          -e DB_USERNAME=${{ secrets.DB_USERNAME }}
           -e DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           -e DB_DATABASE=${{ secrets.DB_DATABASE }}
           -e KAKAO_ID=${{ secrets.KAKAO_ID }}
