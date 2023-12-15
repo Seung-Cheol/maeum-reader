@@ -19,8 +19,7 @@ export class UserService {
     const response = await axios.post('https://kauth.kakao.com/oauth/token', null, {
       params : {
         grant_type: 'authorization_code',
-        //client_id: process.env.KAKAO_ID,
-        client_id : '5abd0f30af3549a6a970bd3208fb7dc1',
+        client_id: process.env.KAKAO_ID,
         redirect_uri: 'http://localhost:3000',
         code : code
       }, 
