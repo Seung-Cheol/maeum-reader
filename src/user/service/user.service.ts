@@ -31,11 +31,12 @@ export class UserService {
       headers: {
         Authorization: `Bearer ${kakaotoken}`,
       }
-    })
+    }) 
     console.log(response)
     const tokenRequest = new TokenRequest()
     tokenRequest.mediaId = response.data.id
-    tokenRequest.nickname = response.data.nickname
+    tokenRequest.mediaType = 'kakao'
+    tokenRequest.nickname = response.data.properties.nickname
     return tokenRequest
   }
 
@@ -67,7 +68,8 @@ export class UserService {
   async createUser(tokenRequest : TokenRequest) {
     const result = this.userRepository.create({
       mediaId : tokenRequest.mediaId,
-      nickname : tokenRequest.nickname
+      nickname : tokenRequest.nickname,
+      mediaType : tokenRequest.mediaType
     })
     return await this.userRepository.save(result);
   }

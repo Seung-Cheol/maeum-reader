@@ -23,9 +23,6 @@ import { Bookmark } from './diary/entity/bookmark.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      extra: {
-        timezone: 'local',
-      },
       synchronize: true,
       entities: [
         User,
