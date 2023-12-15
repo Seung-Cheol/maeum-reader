@@ -15,18 +15,21 @@ export class UserService {
   ){}
 
   async getKakaotoken(code : String) {
+    console.log(code)
     const response = await axios.post('https://kauth.kakao.com/oauth/token', null, {
-      params: {
+      params : {
         grant_type: 'authorization_code',
-        client_id: process.env.KAKAO_ID,
-        redirect_uri: 'http://localhost:3000/oauth/kakao',
-        code : code,
-      },
+        //client_id: process.env.KAKAO_ID,
+        client_id : '5abd0f30af3549a6a970bd3208fb7dc1',
+        redirect_uri: 'http://localhost:3000',
+        code : code
+      }, 
     });
     return response.data.access_token  
   }
 
   async getKakaoInfo(kakaotoken : String) {
+    console.log("ADSsdasd")
     const response = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
         Authorization: `Bearer ${kakaotoken}`,
@@ -53,8 +56,9 @@ export class UserService {
         expiresIn: process.env.AUTHORIZATION_TIME,
       },
     );
+    console.log("wdwqdqqwd")
     return { Authorization : `Bearer ${Authorization}`,
-              id : `${userInfo.id}`,
+              id : `${userInfo.id}`, 
               nickname : `${userInfo.nickname}`
       }
   }
