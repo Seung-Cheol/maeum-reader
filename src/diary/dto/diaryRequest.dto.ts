@@ -1,7 +1,5 @@
-export class DiaryResponse {
-  public id : number
+export class DiaryRequest {
   public summary : string
   public content : string
   public emotion : string[]
-  public createdAt : Date
 }

@@ -1,8 +1,7 @@
 import { Controller, Post, Get, Res, UseGuards, Query } from '@nestjs/common';
-import { KakaoAuthenticationGuard } from '../passport/kakao/kakao.guard';
 import { UserService } from '../service/user.service';
 
-@Controller('user')
+@Controller('api/user')
 export class UserController {
   constructor(
     private readonly userService : UserService

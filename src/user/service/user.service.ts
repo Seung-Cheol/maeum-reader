@@ -19,7 +19,7 @@ export class UserService {
       params: {
         grant_type: 'authorization_code',
         client_id: process.env.KAKAO_ID,
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: 'http://localhost:3000/oauth/kakao',
         code : code,
       },
     });
@@ -52,7 +52,10 @@ export class UserService {
         expiresIn: process.env.AUTHORIZATION_TIME,
       },
     );
-    return `Bearer ${Authorization}`
+    return `{ Authorization : Bearer ${Authorization},
+              id : ${userInfo.id}
+              nickname : ${userInfo.nickname}
+    }`
   }
 
   async findbyMediaId(mediaId : string) {
@@ -62,10 +65,10 @@ export class UserService {
   }
 
   async createUser(tokenRequest : TokenRequest) {
-    const result = await this.userRepository.save({
+    const result = this.userRepository.create({
       mediaId : tokenRequest.mediaId,
       nickname : tokenRequest.nickname
     })
-    return this.userRepository.save(result);
+    return await this.userRepository.save(result);
   }
 }

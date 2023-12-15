@@ -4,6 +4,7 @@ import { UserService } from './service/user.service';
 import { User } from './entity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { AccessStrategy } from './passport/jwt/jwt.strategy';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User])
@@ -13,7 +14,8 @@ import { JwtService } from '@nestjs/jwt';
   ],
   providers: [
     UserService,
-    JwtService
+    JwtService,
+    AccessStrategy
   ]
 })
 export class UserModule {}

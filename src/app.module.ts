@@ -8,7 +8,7 @@ import { User } from './user/entity/user.entity';
 import { Diary } from './diary/entity/diary.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Emotion } from './diary/entity/emotion.entity';
-import { bookmark } from './diary/entity/bookmark.entity';
+import { Bookmark } from './diary/entity/bookmark.entity';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ import { bookmark } from './diary/entity/bookmark.entity';
         User,
         Diary,
         Emotion,
-        bookmark
+        Bookmark
       ],
       logging: true,
     }),

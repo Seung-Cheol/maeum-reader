@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('Bookmark')
-export class bookmark {
+export class Bookmark {
   @PrimaryGeneratedColumn()
   public id : number;
 
