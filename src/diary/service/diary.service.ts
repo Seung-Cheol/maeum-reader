@@ -27,11 +27,15 @@ export class DiaryService {
           diaryId : id
         }
       })
-      emotion.map(e=>e.id);
+      const emotions = []
+      emotion.forEach((e)=>{
+        const { emotion} = e
+        emotions.push(emotion)
+      })
 
       const diaryResponse = new DiaryResponse();
       diaryResponse.content = diary.content;
-      diaryResponse.emotion = emotion;
+      diaryResponse.emotion = emotions;
       diaryResponse.id = diary.id
       diaryResponse.summary = diary.summary;
       diaryResponse.createdAt = diary.createdAt

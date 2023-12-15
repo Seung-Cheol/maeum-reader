@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, BeforeInsert, BeforeUpdate } from "typeorm";
 
 @Entity('Diary')
 export class Diary {
@@ -14,9 +14,19 @@ export class Diary {
  @Column('longtext')
  public content : string;
 
- @CreateDateColumn({ type: 'timestamp' })
+ @Column({ type: 'timestamp' })
  public createdAt : Date;
 
- @CreateDateColumn({ type: 'timestamp' })
+ @Column({ type: 'timestamp' })
  public updatedAt : Date
+
+ @BeforeInsert()
+ updateCreatedAt() { 
+    this.createdAt = new Date();
+  }
+
+  @BeforeUpdate()
+  updateUpdatedAt() {
+    this.createdAt = new Date();
+  }
 }

@@ -30,6 +30,9 @@ import { Bookmark } from './diary/entity/bookmark.entity';
         Emotion,
         Bookmark
       ],
+      extra: {
+        timezone: 'local',
+      },
       logging: true,
     }),
     UserModule, 
