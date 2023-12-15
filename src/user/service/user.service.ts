@@ -53,10 +53,10 @@ export class UserService {
         expiresIn: process.env.AUTHORIZATION_TIME,
       },
     );
-    return `{ Authorization : Bearer ${Authorization},
-              id : ${userInfo.id}
-              nickname : ${userInfo.nickname}
-    }`
+    return { Authorization : `Bearer ${Authorization}`,
+              id : `${userInfo.id}`,
+              nickname : `${userInfo.nickname}`
+      }
   }
 
   async findbyMediaId(mediaId : string) {

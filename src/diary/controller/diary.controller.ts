@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Put, Param, UseGuards, Req, Body } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Put, Param, UseGuards, Req, Body, Query } from '@nestjs/common';
 import { AccessAuthenticationGuard } from 'src/user/passport/jwt/jwt.guard';
 import { DiaryService } from '../service/diary.service';
 import { DiaryRequest } from '../dto/diaryRequest.dto';
@@ -49,5 +49,10 @@ export class DiaryController {
     }
   }
 
+  @Get('/stat')
+  @UseGuards(AccessAuthenticationGuard)
+  async getDiaryStat(@Req() req : any, @Query('month') month : String) {
+    return ''
+  }
 
 }
