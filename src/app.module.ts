@@ -31,7 +31,7 @@ import { Bookmark } from './diary/entity/bookmark.entity';
         Bookmark
       ],
       extra: {
-        timezone: 'local',
+        timezone: 'Asia/Seoul',
       },
       logging: true,
     }),
