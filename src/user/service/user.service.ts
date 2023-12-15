@@ -20,7 +20,7 @@ export class UserService {
       params : {
         grant_type: 'authorization_code',
         client_id: process.env.KAKAO_ID,
-        redirect_uri: 'http://localhost:3000',
+        redirect_uri: 'http://localhost:3000/oauth/kakao',
         code : code
       }, 
     });
