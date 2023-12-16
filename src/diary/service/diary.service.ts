@@ -165,9 +165,9 @@ export class DiaryService {
         text : "안녕하세요 반갑습니다 오늘도 행복한 하루 되세요"
       }, {
         headers : {
-          'X-NCP-CLOVASTUDIO-API-KEY' : 'NTA0MjU2MWZlZTcxNDJiY1mEkcJ/ub2zlRA1+W3v7OujVo9qXbSktndqzCdfacDr7wckQ2C49/zKGfmr/vqEcjK/CS980NvsEC0bfTW/U00NidrlvuJ6wbJ5t9wsy86giFybxob1i0Z4ONegfybEPXnBT9z6ysE21b5KvpBsR/Ah8KLqONigaqbBXmTUkI82yhFIr7qslPWo61k+6iKRQQ==',
-          'X-NCP-APIGW-API-KEY' : 'pfey133GCowhE6nF8SgNoT350sLbLrCRtVDbPMYU',
-          'X-NCP-CLOVASTUDIO-REQUEST-ID': '84c99f351fc1419bb685d7415cac8ae6',
+          'X-NCP-CLOVASTUDIO-API-KEY' : process.env.X_NCP_CLOVASTUDIO_API_KEY,
+          'X-NCP-APIGW-API-KEY' : process.env.X_NCP_APIGW_API_KEY,
+          'X-NCP-CLOVASTUDIO-REQUEST-ID': process.env.X_NCP_CLOVASTUDIO_REQUEST_ID,
           'Content-Type': 'application/json'
         }
       }); 
