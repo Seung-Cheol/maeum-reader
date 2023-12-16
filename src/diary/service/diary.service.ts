@@ -9,19 +9,40 @@ import { BookmarkRequest } from '../dto/bookmarkRequest.dto';
 import { DiaryUpdate } from '../dto/diaryUpdate.dto';
 import { Bookmark } from '../entity/bookmark.entity';
 import { DiaryController } from '../controller/diary.controller';
-import axios from 'axios';
+import axios, { AxiosResponse, CancelTokenSource } from 'axios';
 import axiosRetry from 'axios-retry';
+import { HttpService,HttpModule } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class DiaryService {
+  private cancelTokenSource: CancelTokenSource;
   constructor(
     @InjectRepository(Diary)
     private readonly diaryRepository : Repository<Diary>,
     @InjectRepository(Bookmark)
     private readonly bookmarkRepository : Repository<Bookmark>,
     @InjectRepository(Emotion)
-    private readonly emotionRepository : Repository<Emotion>
-  ) {}
+    private readonly emotionRepository : Repository<Emotion>,
+    private readonly httpService : HttpService
+  ) {
+    // axiosRetry(this.httpService.axiosRef, {
+    //   retries: 10,
+    //   retryDelay: axiosRetry.exponentialDelay,
+    //   shouldResetTimeout: true,
+    //   retryCondition(error) {
+    //     switch (error.response?.status) {
+    //       case 400:
+    //       case 404:
+    //       case 429:
+    //         return true;
+    //       default:
+    //         return false;
+    //     }
+    //   },
+    // });
+
+  }
 
     async getById(id : number, month? : any) {
       let diary;
@@ -155,23 +176,46 @@ export class DiaryService {
       })
     }
 
-    async summaryWrting() {
-      return 'sa'
+    async summaryWrting(content : string) {
+      console.log("asdasd")
+      let text = content['content']
+      
+      const response: AxiosResponse = await lastValueFrom(
+        this.httpService.post('https://clovastudio.apigw.ntruss.com/testapp/v1/api-tools/summarization/v2/d32c67a03d414ac2baa7db4b11615152',
+          {
+            texts:[text],
+            segMaxSize : 3000,
+            segMinSize : 1000,
+            segCount : 1,
+            autoSentenceSplitter : true
+          }, 
+          {
+            headers: {
+              'X-NCP-CLOVASTUDIO-API-KEY': process.env.X_NCP_CLOVASTUDIO_API_KEY_2,
+              'X-NCP-APIGW-API-KEY': process.env.X_NCP_APIGW_API_KEY,
+              'X-NCP-CLOVASTUDIO-REQUEST-ID': process.env.X_NCP_CLOVASTUDIO_REQUEST_ID_2,
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+      );
+      return response.data.result.text
     }
 
     async analyzeEmotion(content : string) {
       let emotion = []
       let text = content['content']
       console.log(typeof text)
-      const maxlength = 150
+      const maxlength = 50
       const parts = [];
       if (text.length >= maxlength) {
         const chunkSize = Math.ceil(text.length / 5);
     
         for (let i = 0; i < 5; i++) {
           const start = i * chunkSize;
+          const realstart = 0
           const end = start + chunkSize;
-          parts.push(text.substring(start, end));
+          parts.push(text.substring(realstart, end));
         }
     
       } else {
@@ -179,6 +223,7 @@ export class DiaryService {
     
         for (let i = 0; i < 3; i++) {
           const start = i * chunkSize;
+          const realstart = 0
           const end = start + chunkSize;
           parts.push(text.substring(start, end));
         }
@@ -186,41 +231,79 @@ export class DiaryService {
       }
       console.log(parts);
       
-      for(let i = 0; i<parts.length; i++) {
-        console.log(parts)
-        const apiClient = axios.create();
-        axiosRetry(apiClient, {
-        retries: 10,                
-        retryDelay: axiosRetry.exponentialDelay,
-        shouldResetTimeout: true,
-        retryCondition(error) {
-          switch (error.response.status) {
-            case 400:
-            case 404:
-            case 429:
-              return true; 
-            default:
-              return false; 
+      for (let i = 0; i < parts.length; i++) {
+        console.log(parts);
+  
+        this.cancelTokenSource = axios.CancelToken.source();
+  
+        try {
+          const response: AxiosResponse = await lastValueFrom(
+            this.httpService.post(
+              'https://clovastudio.apigw.ntruss.com/serviceapp/v1/tasks/8nwqliza/search',
+              {
+                text: parts[i],
+              },
+              {
+                headers: {
+                  'X-NCP-CLOVASTUDIO-API-KEY': process.env.X_NCP_CLOVASTUDIO_API_KEY,
+                  'X-NCP-APIGW-API-KEY': process.env.X_NCP_APIGW_API_KEY,
+                  'X-NCP-CLOVASTUDIO-REQUEST-ID': process.env.X_NCP_CLOVASTUDIO_REQUEST_ID,
+                  'Content-Type': 'application/json',
+                },
+                cancelToken: this.cancelTokenSource.token,
+              },
+            ),
+          );
+  
+          console.log(response);
+          emotion.push(response.data.result.outputText);
+          if(response.data.result==null) {
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          const response: AxiosResponse = await lastValueFrom(
+            this.httpService.post(
+              'https://clovastudio.apigw.ntruss.com/serviceapp/v1/tasks/8nwqliza/search',
+              {
+                text: parts[i],
+              },
+              {
+                headers: {
+                  'X-NCP-CLOVASTUDIO-API-KEY': process.env.X_NCP_CLOVASTUDIO_API_KEY,
+                  'X-NCP-APIGW-API-KEY': process.env.X_NCP_APIGW_API_KEY,
+                  'X-NCP-CLOVASTUDIO-REQUEST-ID': process.env.X_NCP_CLOVASTUDIO_REQUEST_ID,
+                  'Content-Type': 'application/json',
+                },
+                cancelToken: this.cancelTokenSource.token,
+              },
+            ),
+          );
+
+          console.log(response);
+          emotion.push(response.data.result.outputText);
+
+          }
+
+          if(i+1!=parts.length)
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+        } catch (error) {
+          console.error(error);
+  
+          if (axios.isCancel(error)) {
+            console.log('Request canceled.');
+          } else {
+            console.error(`Failed to fetch data: ${error.message}`);
           }
         }
-      });
-        const response = await apiClient.post('https://clovastudio.apigw.ntruss.com/serviceapp/v1/tasks/8nwqliza/search', 
-      {
-        includeAiFilters : true,
-        text : parts[i]
-      }, {
-        headers : {
-          'X-NCP-CLOVASTUDIO-API-KEY' : process.env.X_NCP_CLOVASTUDIO_API_KEY,
-          'X-NCP-APIGW-API-KEY' : process.env.X_NCP_APIGW_API_KEY,
-          'X-NCP-CLOVASTUDIO-REQUEST-ID': process.env.X_NCP_CLOVASTUDIO_REQUEST_ID,
-          'Content-Type': 'application/json' 
-        }
-      });
-        console.log(response)
-        emotion.push(response.data.result.outputText)
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-        
+      }
+      if(emotion.length==2) {
+        emotion.push('억울한')
       }
       return emotion;
+    }
+  
+    // 요청을 취소하고 연결을 끊습니다.
+    public cancelRequest(): void {
+      if (this.cancelTokenSource) {
+        this.cancelTokenSource.cancel('Request canceled by the user.');
+      }
     }
 }

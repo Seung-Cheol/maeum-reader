@@ -110,10 +110,12 @@ export class DiaryController {
   @Get('/analytics')
   @UseGuards(AccessAuthenticationGuard)
   async getClovaData(@Body() text : string) {
+
+    const writing = await this.diaryService.summaryWrting(text)
     const emotion = await this.diaryService.analyzeEmotion(text)
-    const writing = await this.diaryService.summaryWrting()
-    Promise.all([writing,emotion])
-    console.log(emotion)
-    return emotion
+    return {
+      emotion : emotion,
+      writing : writing
+    }
   }
 }
