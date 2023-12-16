@@ -7,9 +7,9 @@ export class Emotion {
   public id : number;
 
   @Column()
-  diaryId : number;
+  public diaryId : number;
 
   @Column()
-  emotion : string;
+  public emotion : string;
 
 }

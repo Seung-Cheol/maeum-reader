@@ -15,6 +15,9 @@ export class Diary {
  public content : string;
 
  @Column({ type: 'timestamp' })
+ public writingDay : Date;
+
+ @Column({ type: 'timestamp' })
  public createdAt : Date;
 
  @Column({ type: 'timestamp' })

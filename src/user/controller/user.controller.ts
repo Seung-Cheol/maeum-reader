@@ -13,6 +13,6 @@ export class UserController {
     const kakaotoken = await this.userService.getKakaotoken(code);
     const tokenRequest = await this.userService.getKakaoInfo(kakaotoken);
     return await this.userService.setToken(tokenRequest)
-  }
+  } 
 
 }

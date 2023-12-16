@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { BookmarkRequest } from "../dto/bookmarkRequest.dto";
 import { DiaryService } from "../service/diary.service";
 import { DiaryResponse } from "../dto/diaryResponse.dto";
@@ -25,16 +25,15 @@ export class BookmarkController {
 
   @Get('/')
   @UseGuards(AccessAuthenticationGuard)
-  async getBookmarkList(@Req() req : any) {
+  async getBookmarkList(@Query() month : any, @Req() req : any) {
     const { user } = req
     const bookmarkList = await this.diaryService.getBookmarkList(user.id);
-    const response = []
-    const diaryResponse = new DiaryResponse();
+    const data = []
     for (const diary of bookmarkList) {
-      const res = await this.diaryService.getById(diary.diaryId)
-      response.push(res);
+      const res = await this.diaryService.getById(diary.diaryId, month)
+      data.push(res);
     }
-    return response
+    return data
 
   }
 

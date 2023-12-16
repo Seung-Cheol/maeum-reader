@@ -8,6 +8,7 @@ import { DiaryResponse } from '../dto/diaryResponse.dto';
 import { BookmarkRequest } from '../dto/bookmarkRequest.dto';
 import { DiaryUpdate } from '../dto/diaryUpdate.dto';
 import { Bookmark } from '../entity/bookmark.entity';
+import { DiaryController } from '../controller/diary.controller';
 
 @Injectable()
 export class DiaryService {
@@ -20,8 +21,17 @@ export class DiaryService {
     private readonly emotionRepository : Repository<Emotion>
   ) {}
 
-    async getById(id : number) {
-      const diary = await this.diaryRepository.findOne({where:{id}})
+    async getById(id : number, month? : any) {
+      let diary;
+      if(!month) {
+        diary = await this.diaryRepository.findOne({where:{id}})
+      } else {
+        diary = await this.diaryRepository.createQueryBuilder('diary')
+        .where('DATE_FORMAT(diary.writingDay, "%Y-%m")= :month', {month})
+        .andWhere('diary.id = :id', { id })
+        .getOne();
+    }
+
       const emotion : any = await this.emotionRepository.find({
         where : {
           diaryId : id
@@ -32,7 +42,12 @@ export class DiaryService {
         const { emotion} = e
         emotions.push(emotion)
       })
-
+      console.log(diary)
+      if(!diary) {
+        return {
+          message : "데이터가 없습니다"
+        }
+      }
       const diaryResponse = new DiaryResponse();
       diaryResponse.content = diary.content;
       diaryResponse.emotion = emotions;
@@ -45,13 +60,23 @@ export class DiaryService {
     }
 
     async getListByMonth(month : any) {
-      return await this.diaryRepository.createQueryBuilder('diary')
-      .where('DATE_FORMAT(diary.createdAt, %Y-%m)= :month', {month})
+      const monthData : any = await this.diaryRepository.createQueryBuilder('diary')
+      .where('DATE_FORMAT(diary.writingDay, "%Y-%m")= :month', {month})
       .getMany()
+      for(let i=0; i<monthData.length; i++) {
+        const emotion = await this.emotionRepository.find({
+          where : {
+            diaryId : monthData[i].id
+          }
+        })
+        monthData[i]['emotion'] = emotion
+      }
+      return monthData
     }
 
     async postDiary(id: number, diaryRequest : DiaryRequest) {
       const userInfo = this.diaryRepository.create({
+        userId : id,
         content : diaryRequest.content,
         summary : diaryRequest.summary
       })
@@ -72,12 +97,16 @@ export class DiaryService {
           id : diaryUpdate.id
         }
       })
-      result.content = diaryUpdate.content
-      result.summary = diaryUpdate.summary
+      if(diaryUpdate.content)
+        result.content = diaryUpdate.content
+
+      if(diaryUpdate.summary)
+        result.summary = diaryUpdate.summary
+
       await this.diaryRepository.save(result);
 
+      if(diaryUpdate.emotion) {
       await this.removeEmotion(diaryUpdate.id)
-
       for (const emotion of diaryUpdate.emotion ) {
         const emotionInfo = this.emotionRepository.create({
           diaryId : diaryUpdate.id,
@@ -85,7 +114,7 @@ export class DiaryService {
         })
         await this.emotionRepository.save(emotionInfo)
       }
-
+    }
     }
 
     async postBookmark(bookmarkRequest : BookmarkRequest) {
@@ -116,5 +145,11 @@ export class DiaryService {
       })
     }
 
+    async summaryWrting() {
 
+    }
+
+    async analyzeEmotion() {
+
+    }
 }

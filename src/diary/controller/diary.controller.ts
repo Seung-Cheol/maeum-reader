@@ -9,15 +9,18 @@ export class DiaryController {
     private readonly diaryService : DiaryService
   ){}
 
-  @Get('/:id')
+  @Get('/get/:id')
   @UseGuards(AccessAuthenticationGuard)
   async getDiaryById(@Param('id') id : number) {
+    console.log("ASDasdasd")
     return await this.diaryService.getById(id);
   }
 
-  @Get('/list/:month')
+  @Get('/list')
   @UseGuards(AccessAuthenticationGuard)
-  async getDiaryListByMonth(@Param('month') month : any) {
+  async getDiaryListByMonth(@Query('month') month : any) {
+    console.log("Adsasdsa")
+    console.log(month+"ㅁㄴㅇㅁㄴㅇ") 
     return await this.diaryService.getListByMonth(month);
   }
 
@@ -55,4 +58,12 @@ export class DiaryController {
     return ''
   }
 
+  @Get('/analytics')
+  @UseGuards(AccessAuthenticationGuard)
+  async getClovaData(@Body() body : DiaryRequest) {
+    const writing = this.diaryService.summaryWrting()
+    const emotion = this.diaryService.analyzeEmotion()
+    Promise.all([writing,emotion])
+    return 'z';
+  }
 }

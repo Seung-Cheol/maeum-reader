@@ -21,6 +21,7 @@ export class UserService {
         grant_type: 'authorization_code',
         client_id: process.env.KAKAO_ID,
         redirect_uri: 'http://localhost:3000/oauth/kakao',
+        //redirect_uri : 'https://maeum-reader.xyz/oauth/kakao',
         code : code
       }, 
     });
