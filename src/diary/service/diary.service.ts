@@ -71,7 +71,10 @@ export class DiaryService {
             diaryId : monthData[i].id
           }
         })
-        monthData[i]['emotion'] = emotion
+        monthData[i]['emotion'] = []
+        for(let a=0; a<emotion.length; a++) {
+          monthData[i]['emotion'].push(emotion[a].emotion)
+        }
       }
       return monthData
     }

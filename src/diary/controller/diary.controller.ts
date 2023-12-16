@@ -58,7 +58,9 @@ export class DiaryController {
   async getDiaryStat(@Req() req : any, @Query('month') month : String) {
     const { user } = req
     const result = await this.diaryService.getListByMonth(month, user.id)
-    console.log(result)
+    for(let i=0; i<result.length; i++) {
+      console.log(result[i].emotion)
+    }
   }
 
   @Get('/analytics')
