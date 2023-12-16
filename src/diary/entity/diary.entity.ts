@@ -26,6 +26,7 @@ export class Diary {
  @BeforeInsert()
  updateCreatedAt() { 
     this.createdAt = new Date();
+    this.writingDay = new Date(this.writingDay);
   }
 
   @BeforeUpdate()

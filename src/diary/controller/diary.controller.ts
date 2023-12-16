@@ -18,10 +18,11 @@ export class DiaryController {
 
   @Get('/list')
   @UseGuards(AccessAuthenticationGuard)
-  async getDiaryListByMonth(@Query('month') month : any) {
+  async getDiaryListByMonth(@Query('month') month : any, @Req() req : any) {
     console.log("Adsasdsa")
     console.log(month+"ㅁㄴㅇㅁㄴㅇ") 
-    return await this.diaryService.getListByMonth(month);
+    const {user} = req
+    return await this.diaryService.getListByMonth(month, user.id);
   }
 
   @Post('/')
@@ -55,14 +56,17 @@ export class DiaryController {
   @Get('/stat')
   @UseGuards(AccessAuthenticationGuard)
   async getDiaryStat(@Req() req : any, @Query('month') month : String) {
-    return ''
+    const { user } = req
+    const result = await this.diaryService.getListByMonth(month, user.id)
+    console.log(result)
   }
 
   @Get('/analytics')
   @UseGuards(AccessAuthenticationGuard)
   async getClovaData(@Body() body : DiaryRequest) {
-    const writing = this.diaryService.summaryWrting()
     const emotion = this.diaryService.analyzeEmotion()
+    console.log(emotion)
+    const writing = this.diaryService.summaryWrting()
     Promise.all([writing,emotion])
     return 'z';
   }

@@ -9,6 +9,7 @@ import { BookmarkRequest } from '../dto/bookmarkRequest.dto';
 import { DiaryUpdate } from '../dto/diaryUpdate.dto';
 import { Bookmark } from '../entity/bookmark.entity';
 import { DiaryController } from '../controller/diary.controller';
+import axios from 'axios';
 
 @Injectable()
 export class DiaryService {
@@ -59,9 +60,10 @@ export class DiaryService {
       }
     }
 
-    async getListByMonth(month : any) {
+    async getListByMonth(month : any, id : number) {
       const monthData : any = await this.diaryRepository.createQueryBuilder('diary')
       .where('DATE_FORMAT(diary.writingDay, "%Y-%m")= :month', {month})
+      .andWhere('diary.userId=:userId',{userId:id})
       .getMany()
       for(let i=0; i<monthData.length; i++) {
         const emotion = await this.emotionRepository.find({
@@ -75,10 +77,14 @@ export class DiaryService {
     }
 
     async postDiary(id: number, diaryRequest : DiaryRequest) {
+      //console.log(diaryRequest)
+      //const writingDay = new Date(diaryRequest.wrtingDay).getTime();
+      //console.log(writingDay)
       const userInfo = this.diaryRepository.create({
         userId : id,
         content : diaryRequest.content,
-        summary : diaryRequest.summary
+        summary : diaryRequest.summary,
+        writingDay : diaryRequest.writingDay
       })
       await this.diaryRepository.save(userInfo)
 
@@ -150,6 +156,18 @@ export class DiaryService {
     }
 
     async analyzeEmotion() {
-
+      const response = await axios.post('https://clovastudio.apigw.ntruss.com/testapp/v1/tasks/8nwqliza/search', 
+      {
+        includeAiFilters : true,
+        text : "안녕하세요 반갑습니다 오늘도 행복한 하루 되세요"
+      }, {
+        headers : {
+          'X-NCP-CLOVASTUDIO-API-KEY' : 'NTA0MjU2MWZlZTcxNDJiY1mEkcJ/ub2zlRA1+W3v7OujVo9qXbSktndqzCdfacDr7wckQ2C49/zKGfmr/vqEcjK/CS980NvsEC0bfTW/U00NidrlvuJ6wbJ5t9wsy86giFybxob1i0Z4ONegfybEPXnBT9z6ysE21b5KvpBsR/Ah8KLqONigaqbBXmTUkI82yhFIr7qslPWo61k+6iKRQQ==',
+          'X-NCP-APIGW-API-KEY' : 'pfey133GCowhE6nF8SgNoT350sLbLrCRtVDbPMYU',
+          'X-NCP-CLOVASTUDIO-REQUEST-ID': '84c99f351fc1419bb685d7415cac8ae6',
+          'Content-Type': 'application/json'
+        }
+      }); 
+      console.log(response)
     }
 }

@@ -1,6 +1,6 @@
 export class DiaryRequest {
   public summary : string
   public content : string
-  public wrtingDay : Date
+  public writingDay : Date
   public emotion : string[]
 }
