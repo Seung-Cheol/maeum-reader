@@ -29,6 +29,9 @@ jobs:
           echo "SECRET_KEY"="$SECRET_KEY" >> .env
           echo "KAKAO_ID"="$KAKAO_ID" >> .env
           echo "AUTHORIZATION_TIME"="$AUTHORIZATION_TIME" >> .env
+          echo "X_NCP_CLOVASTUDIO_API_KEY" >> .env
+          echo "X_NCP_APIGW_API_KEY" >> .env
+          echo "X_NCP_CLOVASTUDIO_REQUEST_ID" >> .env
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
@@ -37,6 +40,9 @@ jobs:
           SECRET_KEY: ${{ secrets.DB_SECRET_KEY }}
           KAKAO_ID: ${{ secrets.KAKAO_ID }}
           AUTHORIZATION_TIME: ${{ secrets.AUTHORIZATION_TIME }}
+          X_NCP_CLOVASTUDIO_API_KEY: ${{ secrets.X_NCP_CLOVASTUDIO_API_KEY }}
+          X_NCP_APIGW_API_KEY: ${{ secrets.X_NCP_APIGW_API_KEY }}
+          X_NCP_CLOVASTUDIO_REQUEST_ID: ${{ secrets.X_NCP_CLOVASTUDIO_REQUEST_ID }}
 
       - name: Checkout
         uses: actions/checkout@v2
