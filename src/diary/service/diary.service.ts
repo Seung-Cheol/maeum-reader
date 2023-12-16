@@ -10,6 +10,7 @@ import { DiaryUpdate } from '../dto/diaryUpdate.dto';
 import { Bookmark } from '../entity/bookmark.entity';
 import { DiaryController } from '../controller/diary.controller';
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
 @Injectable()
 export class DiaryService {
@@ -155,22 +156,71 @@ export class DiaryService {
     }
 
     async summaryWrting() {
-
+      return 'sa'
     }
 
-    async analyzeEmotion() {
-      const response = await axios.post('https://clovastudio.apigw.ntruss.com/testapp/v1/tasks/8nwqliza/search', 
+    async analyzeEmotion(content : string) {
+      let emotion = []
+      let text = content['content']
+      console.log(typeof text)
+      const maxlength = 150
+      const parts = [];
+      if (text.length >= maxlength) {
+        const chunkSize = Math.ceil(text.length / 5);
+    
+        for (let i = 0; i < 5; i++) {
+          const start = i * chunkSize;
+          const end = start + chunkSize;
+          parts.push(text.substring(start, end));
+        }
+    
+      } else {
+        const chunkSize = Math.ceil(text.length / 3);
+    
+        for (let i = 0; i < 3; i++) {
+          const start = i * chunkSize;
+          const end = start + chunkSize;
+          parts.push(text.substring(start, end));
+        }
+    
+      }
+      console.log(parts);
+      
+      for(let i = 0; i<parts.length; i++) {
+        console.log(parts)
+        const apiClient = axios.create();
+        axiosRetry(apiClient, {
+        retries: 10,                
+        retryDelay: axiosRetry.exponentialDelay,
+        shouldResetTimeout: true,
+        retryCondition(error) {
+          switch (error.response.status) {
+            case 400:
+            case 404:
+            case 429:
+              return true; 
+            default:
+              return false; 
+          }
+        }
+      });
+        const response = await apiClient.post('https://clovastudio.apigw.ntruss.com/serviceapp/v1/tasks/8nwqliza/search', 
       {
         includeAiFilters : true,
-        text : "안녕하세요 반갑습니다 오늘도 행복한 하루 되세요"
+        text : parts[i]
       }, {
         headers : {
           'X-NCP-CLOVASTUDIO-API-KEY' : process.env.X_NCP_CLOVASTUDIO_API_KEY,
           'X-NCP-APIGW-API-KEY' : process.env.X_NCP_APIGW_API_KEY,
           'X-NCP-CLOVASTUDIO-REQUEST-ID': process.env.X_NCP_CLOVASTUDIO_REQUEST_ID,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json' 
         }
-      }); 
-      console.log(response)
+      });
+        console.log(response)
+        emotion.push(response.data.result.outputText)
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        
+      }
+      return emotion;
     }
 }

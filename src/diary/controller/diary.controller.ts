@@ -76,6 +76,7 @@ export class DiaryController {
       '분노' : 0,
       '스트레스 받은' : 0
     }
+
     for(let i =0; i<result.length; i++) {
       for(let a=0; a<result[i]['emotion'].length; a++) {
         emotion[result[i]['emotion'][a]] = emotion[result[i]['emotion'][a]] + 1
@@ -101,17 +102,18 @@ export class DiaryController {
     }
     return {
       summary : summary,
-      emotion : emotion
+      emotion : emotion,
+      result : result
     }
   }
 
   @Get('/analytics')
   @UseGuards(AccessAuthenticationGuard)
-  async getClovaData(@Body() body : DiaryRequest) {
-    const emotion = this.diaryService.analyzeEmotion()
-    console.log(emotion)
-    const writing = this.diaryService.summaryWrting()
+  async getClovaData(@Body() text : string) {
+    const emotion = await this.diaryService.analyzeEmotion(text)
+    const writing = await this.diaryService.summaryWrting()
     Promise.all([writing,emotion])
-    return 'z';
+    console.log(emotion)
+    return emotion
   }
 }
