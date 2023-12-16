@@ -107,7 +107,7 @@ export class DiaryController {
     }
   }
 
-  @Get('/analytics')
+  @Post('/analytics')
   @UseGuards(AccessAuthenticationGuard)
   async getClovaData(@Body() text : string) {
 
