@@ -58,8 +58,50 @@ export class DiaryController {
   async getDiaryStat(@Req() req : any, @Query('month') month : String) {
     const { user } = req
     const result = await this.diaryService.getListByMonth(month, user.id)
-    for(let i=0; i<result.length; i++) {
-      console.log(result[i].emotion)
+    const summary = []
+    const emotion = {
+      '신이 난' : 0,
+      '외로운' : 0,
+      '편안한' : 0,
+      '기쁨' : 0,
+      '부끄러운' : 0,
+      '우울한' : 0,
+      '짜증내는' : 0,
+      '슬픔' : 0,
+      '걱정스러운' : 0,
+      '억울한' : 0,
+      '불안' : 0,
+      '후회되는' : 0,
+      '당황' : 0,
+      '분노' : 0,
+      '스트레스 받은' : 0
+    }
+    for(let i =0; i<result.length; i++) {
+      for(let a=0; a<result[i]['emotion'].length; a++) {
+        emotion[result[i]['emotion'][a]] = emotion[result[i]['emotion'][a]] + 1
+      }
+    }
+
+    let max = result.length - 1
+    let min = 0
+    let first;
+    let second;
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    console.log(result)
+    for(let i=0; i<3; i++) {
+      let random = Math.floor(Math.random()*(max-min +1)) + min
+      if(!(random==first) && !(random==second)) {
+        console.log(random)
+        summary.push(result[random].summary)
+        i==0 ? first=random :second=random
+      } else {
+        i-- 
+      }
+    }
+    return {
+      summary : summary,
+      emotion : emotion
     }
   }
 
